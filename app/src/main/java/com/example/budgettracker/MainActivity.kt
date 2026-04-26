@@ -10,6 +10,7 @@ import com.example.budgettracker.data.repository.CategoryRepository
 import com.example.budgettracker.data.repository.ExpenseRepository
 import com.example.budgettracker.navigation.BudgetNavGraph
 import com.example.budgettracker.ui.theme.BudgetTrackerTheme
+import com.example.budgettracker.viewmodel.AuthViewModel
 import com.example.budgettracker.viewmodel.CategoryViewModel
 import com.example.budgettracker.viewmodel.CategoryViewModelFactory
 import com.example.budgettracker.viewmodel.ExpenseViewModel
@@ -29,10 +30,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BudgetTrackerTheme {
+                val authViewModel: AuthViewModel = viewModel()
                 val expenseViewModel: ExpenseViewModel = viewModel(factory = expenseFactory)
                 val categoryViewModel: CategoryViewModel = viewModel(factory = categoryFactory)
 
                 BudgetNavGraph(
+                    authViewModel = authViewModel,
                     expenseViewModel = expenseViewModel,
                     categoryViewModel = categoryViewModel
                 )

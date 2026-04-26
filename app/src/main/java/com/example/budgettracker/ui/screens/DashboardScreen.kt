@@ -4,6 +4,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,7 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.budgettracker.data.model.Category
+import com.example.budgettracker.data.model.Expense
 import com.example.budgettracker.viewmodel.ExpenseViewModel
+import java.time.LocalDate
 import kotlin.math.PI
 
 // Slice colors for the pie chart
@@ -29,15 +34,18 @@ fun DashboardScreen(
     viewModel: ExpenseViewModel,
     onNavigateToAddExpense: () -> Unit,
     onNavigateToExpenseList: () -> Unit,
-    onNavigateToCategories: () -> Unit
+    onNavigateToCategories: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
+    val monthlyTotal by viewModel.monthlyTotal.collectAsStateWithLifecycle()
     val allExpenses by viewModel.allExpenses.collectAsStateWithLifecycle()
     val allCategories by viewModel.allCategories.collectAsStateWithLifecycle()
-    val monthlyTotal by viewModel.monthlyTotal.collectAsStateWithLifecycle()
 
-    // Build category spending map for chart
     val categorySpendingMap = remember(allExpenses) {
+        val now = LocalDate.now()
+        val startOfMonth = now.withDayOfMonth(1)
         allExpenses
+            .filter { !it.date.isBefore(startOfMonth) && !it.date.isAfter(now) }
             .groupBy { it.categoryId }
             .mapValues { entry -> entry.value.sumOf { it.amount } }
     }
@@ -46,9 +54,18 @@ fun DashboardScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Dashboard", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },

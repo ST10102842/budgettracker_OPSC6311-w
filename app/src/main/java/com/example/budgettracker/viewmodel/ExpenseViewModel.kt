@@ -46,6 +46,40 @@ class ExpenseViewModel(
     private val _monthlyTotal = MutableStateFlow(0.0)
     val monthlyTotal: StateFlow<Double> = _monthlyTotal.asStateFlow()
 
+    // Filter states
+    private val _selectedDateRange = MutableStateFlow<Pair<LocalDate, LocalDate>?>(null)
+    val selectedDateRange: StateFlow<Pair<LocalDate, LocalDate>?> = _selectedDateRange.asStateFlow()
+
+    private val _selectedCategoryId = MutableStateFlow<Int?>(null)
+    val selectedCategoryId: StateFlow<Int?> = _selectedCategoryId.asStateFlow()
+
+    // Filtered expenses
+    val filteredExpenses: StateFlow<List<Expense>> = combine(
+        allExpenses,
+        _selectedDateRange,
+        _selectedCategoryId
+    ) { expenses, dateRange, categoryId ->
+        var filtered = expenses
+
+        // Apply date range filter
+        if (dateRange != null) {
+            filtered = filtered.filter { expense ->
+                !expense.date.isBefore(dateRange.first) && !expense.date.isAfter(dateRange.second)
+            }
+        }
+
+        // Apply category filter
+        if (categoryId != null) {
+            filtered = filtered.filter { it.categoryId == categoryId }
+        }
+
+        filtered
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     init {
         loadMonthlyTotal()
     }
@@ -104,6 +138,29 @@ class ExpenseViewModel(
 
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    // --- Filter Actions ---
+
+    fun setDateRange(startDate: LocalDate, endDate: LocalDate) {
+        _selectedDateRange.value = Pair(startDate, endDate)
+    }
+
+    fun clearDateRange() {
+        _selectedDateRange.value = null
+    }
+
+    fun setCategoryFilter(categoryId: Int?) {
+        _selectedCategoryId.value = categoryId
+    }
+
+    fun clearCategoryFilter() {
+        _selectedCategoryId.value = null
+    }
+
+    fun clearAllFilters() {
+        _selectedDateRange.value = null
+        _selectedCategoryId.value = null
     }
 }
 

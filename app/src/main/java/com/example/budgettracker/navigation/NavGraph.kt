@@ -6,25 +6,55 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.budgettracker.ui.screens.*
+import com.example.budgettracker.viewmodel.AuthViewModel
 import com.example.budgettracker.viewmodel.CategoryViewModel
 import com.example.budgettracker.viewmodel.ExpenseViewModel
 
 @Composable
 fun BudgetNavGraph(
     navController: NavHostController = rememberNavController(),
+    authViewModel: AuthViewModel,
     expenseViewModel: ExpenseViewModel,
     categoryViewModel: CategoryViewModel
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Splash.route
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onSplashFinished = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Login.route) {
             LoginScreen(
+                viewModel = authViewModel,
                 onLoginSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                viewModel = authViewModel,
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -34,7 +64,8 @@ fun BudgetNavGraph(
                 viewModel = expenseViewModel,
                 onNavigateToAddExpense = { navController.navigate(Screen.AddExpense.route) },
                 onNavigateToExpenseList = { navController.navigate(Screen.ExpenseList.route) },
-                onNavigateToCategories  = { navController.navigate(Screen.Categories.route) }
+                onNavigateToCategories = { navController.navigate(Screen.Categories.route) },
+                onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
             )
         }
 
@@ -53,9 +84,21 @@ fun BudgetNavGraph(
         }
 
         composable(Screen.Categories.route) {
-            CategoryScreen(                          // ← now fully wired
+            CategoryScreen(
                 viewModel = categoryViewModel,
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(
+                viewModel = authViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onLogoutSuccess = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Dashboard.route) { inclusive = true }
+                    }
+                }
             )
         }
     }
