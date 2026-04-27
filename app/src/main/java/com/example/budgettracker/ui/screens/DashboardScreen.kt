@@ -1,6 +1,6 @@
 package com.example.budgettracker.ui.screens
 
-import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,19 +10,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.budgettracker.data.model.Category
-import com.example.budgettracker.data.model.Expense
+
 import com.example.budgettracker.viewmodel.ExpenseViewModel
 import java.time.LocalDate
-import kotlin.math.PI
+
 
 // Slice colors for the pie chart
 val CHART_COLORS = listOf(
@@ -56,7 +57,7 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Dashboard", fontWeight = FontWeight.Bold) },
+                title = { Text("Dashboard", fontWeight = Bold) },
                 actions = {
                     IconButton(onClick = onNavigateToProfile) {
                         Icon(
@@ -66,9 +67,9 @@ fun DashboardScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = colorScheme.primary,
+                    titleContentColor = colorScheme.onPrimary,
+                    actionIconContentColor = colorScheme.onPrimary
                 )
             )
         },
@@ -102,15 +103,15 @@ fun DashboardScreen(
             // Monthly Total Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(containerColor = colorScheme.primaryContainer)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("This Month's Spending", fontSize = 13.sp)
                     Text(
                         text = "R ${String.format("%.2f", monthlyTotal)}",
                         fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        fontWeight = Bold,
+                        color = colorScheme.primary
                     )
                 }
             }
@@ -168,11 +169,7 @@ fun DashboardScreen(
                                     }
                                     Text("${category?.iconEmoji ?: "📦"} ${category?.name ?: "Unknown"}", fontSize = 13.sp)
                                 }
-                                Text(
-                                    text = "R${String.format("%.0f", entry.value)} ($percentage%)",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                                Text(text = "R${String.format("%.0f", entry.value)} ($percentage%)", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                             }
                         }
                     }
