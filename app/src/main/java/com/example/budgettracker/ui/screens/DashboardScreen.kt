@@ -1,10 +1,13 @@
 package com.example.budgettracker.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -70,8 +73,20 @@ fun DashboardScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToAddExpense) {
-                Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            FloatingActionButton(
+                onClick = onNavigateToAddExpense,
+                containerColor = Color(0xFF2E7D32),
+                contentColor = Color.White,
+                shape = RoundedCornerShape(20.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 8.dp
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Expense",
+                    modifier = Modifier.size(28.dp)
+                )
             }
         }
     ) { paddingValues ->
@@ -172,9 +187,14 @@ fun DashboardScreen(
 
             OutlinedButton(
                 onClick = onNavigateToCategories,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color(0xFFE8F5E9),
+                    contentColor = Color(0xFF1B5E20)
+                ),
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Manage Categories") }
-
+            ) {
+                Text("Manage Categories")
+            }
             Spacer(modifier = Modifier.height(72.dp)) // Space for FAB
         }
     }
