@@ -1,6 +1,25 @@
 # Budget Tracker 💰
 
 A modern, feature-rich Android expense tracking application built with **Kotlin** and **Jetpack Compose**. Take control of your spending with intuitive budget management, category-based expense tracking, and beautiful data visualization.
+## Demonstration Video
+
+## References
+
+- [Kotlin Official Website](https://kotlinlang.org/) - For language reference and documentation.
+- [Jetpack Compose Website](https://developer.android.com/jetpack/compose) - For UI framework reference and documentation.
+- Material Design 3 guidelines
+- Android Best Practices
+- Open source community contributions
+
+## 📚 Additional Resources
+
+- [Jetpack Compose Documentation](https://developer.android.com/jetpack/compose)
+- [Room Database Guide](https://developer.android.com/training/data-storage/room)
+- [Material Design 3](https://m3.material.io/)
+- [Android Architecture Components](https://developer.android.com/topic/architecture)
+- [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
+
+---
 
 ## ✨ Features
 
@@ -289,34 +308,13 @@ Contributions are welcome! Please follow these guidelines:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👨‍💻 Author
 
 - **Your Name** - Initial work and development
 
-## 📧 Contact
 
-For questions or feedback, please reach out at your.email@example.com
 
-## 🙏 Acknowledgments
-
-- Jetpack Compose documentation and samples
-- Material Design 3 guidelines
-- Android Best Practices
-- Open source community contributions
-
-## 📚 Additional Resources
-
-- [Jetpack Compose Documentation](https://developer.android.com/jetpack/compose)
-- [Room Database Guide](https://developer.android.com/training/data-storage/room)
-- [Material Design 3](https://m3.material.io/)
-- [Android Architecture Components](https://developer.android.com/topic/architecture)
-- [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
-
----
 
 **Happy Budgeting! 💚**
 
