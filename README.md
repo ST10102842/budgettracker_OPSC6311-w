@@ -3,6 +3,7 @@
 A modern, feature-rich Android expense tracking application built with **Kotlin** and **Jetpack Compose**. Take control of your spending with intuitive budget management, category-based expense tracking, and beautiful data visualization.
 
 ## ✨ Features
+### 
 
 ### 🔐 Authentication
 - **User Registration** - Create new accounts with email and password
