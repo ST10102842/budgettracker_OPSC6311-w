@@ -5,8 +5,10 @@ package com.example.budgettracker.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.budgettracker.data.model.BudgetLimit
 import com.example.budgettracker.data.model.Category
 import com.example.budgettracker.data.model.Expense
+import com.example.budgettracker.data.repository.BudgetLimitRepository
 import com.example.budgettracker.data.repository.CategoryRepository
 import com.example.budgettracker.data.repository.ExpenseRepository
 import kotlinx.coroutines.flow.*
@@ -16,7 +18,8 @@ import java.time.LocalDate
 
 class ExpenseViewModel(
     private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val budgetLimitRepository: BudgetLimitRepository
 ) : ViewModel() {
 
     // --- UI State ---
@@ -45,6 +48,15 @@ class ExpenseViewModel(
     // Monthly total spending
     private val _monthlyTotal = MutableStateFlow(0.0)
     val monthlyTotal: StateFlow<Double> = _monthlyTotal.asStateFlow()
+
+    // Global budget limits
+    val budgetLimit: StateFlow<BudgetLimit?> = budgetLimitRepository
+        .budgetLimit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     // Filter states
     private val _selectedDateRange = MutableStateFlow<Pair<LocalDate, LocalDate>?>(null)
@@ -162,6 +174,18 @@ class ExpenseViewModel(
         _selectedDateRange.value = null
         _selectedCategoryId.value = null
     }
+
+    // --- Budget Limit Actions ---
+
+    fun updateBudgetLimits(min: Double, max: Double) {
+        viewModelScope.launch {
+            try {
+                budgetLimitRepository.saveBudgetLimit(BudgetLimit(min, max))
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = "Failed to update budget limits.") }
+            }
+        }
+    }
 }
 
 // Holds the current state of the UI (loading, errors, success signals)
@@ -174,12 +198,13 @@ data class ExpenseUiState(
 // Factory to create the ViewModel with dependencies
 class ExpenseViewModelFactory(
     private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val budgetLimitRepository: BudgetLimitRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ExpenseViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ExpenseViewModel(expenseRepository, categoryRepository) as T
+            return ExpenseViewModel(expenseRepository, categoryRepository, budgetLimitRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

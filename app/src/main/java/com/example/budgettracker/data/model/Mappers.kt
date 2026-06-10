@@ -1,5 +1,6 @@
 package com.example.budgettracker.data.model
 
+import com.example.budgettracker.data.local.entity.BudgetLimitEntity
 import com.example.budgettracker.data.local.entity.CategoryEntity
 import com.example.budgettracker.data.local.entity.ExpenseEntity
 import java.time.Instant
@@ -47,4 +48,14 @@ fun Category.toEntity() = CategoryEntity(
     iconEmoji = iconEmoji,
     colorHex = colorHex,
     monthlyBudget = monthlyBudget
+)
+
+fun BudgetLimitEntity.toBudgetLimit() = BudgetLimit(
+    minLimit = minLimit,
+    maxLimit = maxLimit
+)
+
+fun BudgetLimit.toEntity() = BudgetLimitEntity(
+    minLimit = minLimit,
+    maxLimit = maxLimit
 )
