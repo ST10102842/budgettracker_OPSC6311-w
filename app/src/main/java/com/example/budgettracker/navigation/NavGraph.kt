@@ -92,7 +92,8 @@ fun BudgetNavGraph(
 
         composable(Screen.Profile.route) {
             ProfileScreen(
-                viewModel = authViewModel,
+                authViewModel = authViewModel,
+                expenseViewModel = expenseViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onLogoutSuccess = {
                     navController.navigate(Screen.Login.route) {

@@ -1,28 +1,46 @@
 package com.example.budgettracker.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.budgettracker.viewmodel.AuthViewModel
+import com.example.budgettracker.viewmodel.ExpenseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: AuthViewModel,
+    authViewModel: AuthViewModel,
+    expenseViewModel: ExpenseViewModel,
     onNavigateBack: () -> Unit,
     onLogoutSuccess: () -> Unit
 ) {
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
+    val authState by authViewModel.authState.collectAsStateWithLifecycle()
+    val budgetLimit by expenseViewModel.budgetLimit.collectAsStateWithLifecycle()
     val currentUser = authState.currentUser
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    var minLimit by remember { mutableStateOf("") }
+    var maxLimit by remember { mutableStateOf("") }
+
+    LaunchedEffect(budgetLimit) {
+        budgetLimit?.let {
+            minLimit = it.minLimit.toString()
+            maxLimit = it.maxLimit.toString()
+        }
+    }
 
     LaunchedEffect(authState.isLoggedIn) {
         if (!authState.isLoggedIn) {
@@ -38,7 +56,7 @@ fun ProfileScreen(
             text = { Text("Are you sure you want to logout from your account?") },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.logout()
+                    authViewModel.logout()
                     showLogoutDialog = false
                 }) {
                     Text("Logout", color = MaterialTheme.colorScheme.error)
@@ -74,7 +92,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(24.dp),
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 // Avatar
@@ -136,7 +155,11 @@ fun ProfileScreen(
                             )
                         }
 
-                        Divider()
+                        HorizontalDivider(
+                            Modifier,
+                            DividerDefaults.Thickness,
+                            DividerDefaults.color
+                        )
 
                         // Email
                         Column {
@@ -153,6 +176,51 @@ fun ProfileScreen(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
+                        }
+                    }
+                }
+
+                // Budget Settings Card
+                Text("Budget Settings", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = minLimit,
+                            onValueChange = { if (it.isEmpty() || it.toDoubleOrNull() != null) minLimit = it },
+                            label = { Text("Minimum Budget Goal") },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            prefix = { Text("R ") }
+                        )
+
+                        OutlinedTextField(
+                            value = maxLimit,
+                            onValueChange = { if (it.isEmpty() || it.toDoubleOrNull() != null) maxLimit = it },
+                            label = { Text("Maximum Budget Limit") },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            prefix = { Text("R ") }
+                        )
+
+                        Button(
+                            onClick = {
+                                val min = minLimit.toDoubleOrNull() ?: 0.0
+                                val max = maxLimit.toDoubleOrNull() ?: 0.0
+                                expenseViewModel.updateBudgetLimits(min, max)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Save Budget Limits")
                         }
                     }
                 }
@@ -184,4 +252,3 @@ fun ProfileScreen(
         }
     }
 }
-

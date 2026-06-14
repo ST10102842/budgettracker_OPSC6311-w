@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.budgettracker.data.local.database.BudgetDatabase
+import com.example.budgettracker.data.repository.BudgetLimitRepository
 import com.example.budgettracker.data.repository.CategoryRepository
 import com.example.budgettracker.data.repository.ExpenseRepository
 import com.example.budgettracker.navigation.BudgetNavGraph
@@ -24,8 +25,9 @@ class MainActivity : ComponentActivity() {
         val database = BudgetDatabase.getDatabase(applicationContext)
         val categoryRepository = CategoryRepository(database.categoryDao())
         val expenseRepository = ExpenseRepository(database.expenseDao(), categoryRepository)
+        val budgetLimitRepository = BudgetLimitRepository(database.budgetLimitDao())
 
-        val expenseFactory  = ExpenseViewModelFactory(expenseRepository, categoryRepository)
+        val expenseFactory  = ExpenseViewModelFactory(expenseRepository, categoryRepository, budgetLimitRepository)
         val categoryFactory = CategoryViewModelFactory(categoryRepository)
 
         setContent {

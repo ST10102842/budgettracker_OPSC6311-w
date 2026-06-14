@@ -5,8 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.budgettracker.data.local.dao.BudgetLimitDao
 import com.example.budgettracker.data.local.dao.CategoryDao
 import com.example.budgettracker.data.local.dao.ExpenseDao
+import com.example.budgettracker.data.local.entity.BudgetLimitEntity
 import com.example.budgettracker.data.local.entity.CategoryEntity
 import com.example.budgettracker.data.local.entity.ExpenseEntity
 import kotlinx.coroutines.CoroutineScope
@@ -14,14 +16,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [ExpenseEntity::class, CategoryEntity::class],
-    version = 1,
+    entities = [ExpenseEntity::class, CategoryEntity::class, BudgetLimitEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class BudgetDatabase : RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun budgetLimitDao(): BudgetLimitDao
 
     companion object {
 
@@ -35,6 +38,7 @@ abstract class BudgetDatabase : RoomDatabase() {
                     BudgetDatabase::class.java,
                     "budget_tracker_database"
                 )
+                    .fallbackToDestructiveMigration()
                     .addCallback(DatabaseCallback())
                     .build()
 

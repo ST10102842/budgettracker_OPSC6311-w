@@ -44,6 +44,7 @@ fun DashboardScreen(
     val monthlyTotal by viewModel.monthlyTotal.collectAsStateWithLifecycle()
     val allExpenses by viewModel.allExpenses.collectAsStateWithLifecycle()
     val allCategories by viewModel.allCategories.collectAsStateWithLifecycle()
+    val budgetLimit by viewModel.budgetLimit.collectAsStateWithLifecycle()
 
     val categorySpendingMap = remember(allExpenses) {
         val now = LocalDate.now()
@@ -113,6 +114,72 @@ fun DashboardScreen(
                         fontWeight = Bold,
                         color = colorScheme.primary
                     )
+                }
+            }
+
+            // Budget Status Card
+            budgetLimit?.let { limit ->
+                if (limit.maxLimit > 0) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = when {
+                                monthlyTotal > limit.maxLimit -> colorScheme.errorContainer
+                                monthlyTotal < limit.minLimit -> colorScheme.secondaryContainer
+                                else -> colorScheme.surfaceVariant
+                            }
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = when {
+                                        monthlyTotal > limit.maxLimit -> "🚨 Over Budget"
+                                        monthlyTotal < limit.minLimit -> "🎯 Under Minimum Goal"
+                                        else -> "✅ Within Budget"
+                                    },
+                                    fontWeight = Bold,
+                                    fontSize = 16.sp,
+                                    color = when {
+                                        monthlyTotal > limit.maxLimit -> colorScheme.error
+                                        monthlyTotal < limit.minLimit -> colorScheme.secondary
+                                        else -> colorScheme.primary
+                                    }
+                                )
+                                Text(
+                                    text = "Goal: R${String.format("%.0f", limit.minLimit)} - R${String.format("%.0f", limit.maxLimit)}",
+                                    fontSize = 12.sp
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            val progress = (monthlyTotal / limit.maxLimit).coerceIn(0.0, 1.0).toFloat()
+                            LinearProgressIndicator(
+                                progress = { progress },
+                                modifier = Modifier.fillMaxWidth().height(8.dp),
+                                color = when {
+                                    monthlyTotal > limit.maxLimit -> colorScheme.error
+                                    monthlyTotal > limit.maxLimit * 0.8 -> Color(0xFFFF9800)
+                                    else -> colorScheme.primary
+                                },
+                                trackColor = colorScheme.onSurface.copy(alpha = 0.1f)
+                            )
+                            
+                            if (monthlyTotal > limit.maxLimit) {
+                                Text(
+                                    text = "Over by R${String.format("%.2f", monthlyTotal - limit.maxLimit)}",
+                                    color = colorScheme.error,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
